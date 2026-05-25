@@ -35,8 +35,12 @@ exports.criar = async (req, res) => {
   const capacidade_maxima = setores.length ? somaCapacidadeSetores(setores) : req.body.capacidade_maxima;
   const preco_ingresso = setores.length ? menorPrecoSetores(setores) : req.body.preco_ingresso;
 
-  if (!titulo || !descricao || !data_evento || !horario || !local || !cidade || !capacidade_maxima || preco_ingresso === undefined || preco_ingresso === '' || !categoria_id) {
+  if (!titulo || !descricao || !data_evento || !horario || !local || !cidade || !categoria_id) {
     req.session.erro = 'Preencha todos os campos obrigatórios do evento.';
+    return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? '/eventos/novo' : '/organizador/eventos/novo');
+  }
+  if (!setores.length) {
+    req.session.erro = 'Gere pelo menos um setor com capacidade e valor.';
     return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? '/eventos/novo' : '/organizador/eventos/novo');
   }
 
@@ -93,16 +97,15 @@ exports.atualizar = async (req, res) => {
 
   const dadosEvento = {
     ...req.body,
-    capacidade_maxima: normalizarSetores(req.body).length ? somaCapacidadeSetores(normalizarSetores(req.body)) : req.body.capacidade_maxima,
-    preco_ingresso: normalizarSetores(req.body).length ? menorPrecoSetores(normalizarSetores(req.body)) : req.body.preco_ingresso,
+    capacidade_maxima: normalizarSetores(req.body).length ? somaCapacidadeSetores(normalizarSetores(req.body)) : 0,
+    preco_ingresso: normalizarSetores(req.body).length ? menorPrecoSetores(normalizarSetores(req.body)) : 0,
     status_evento: req.session.usuario.tipo_usuario === 'administrador' ? req.body.status_evento : evento.status_evento,
     imagem: req.file ? `/img/eventos/${req.file.filename}` : evento.imagem
   };
 
   const setores = normalizarSetores(req.body);
-  const erroSetores = validarSetores(setores, dadosEvento.capacidade_maxima);
-  if (erroSetores) {
-    req.session.erro = erroSetores;
+  if (!setores.length) {
+    req.session.erro = 'Gere pelo menos um setor com capacidade e valor.';
     return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? `/eventos/${req.params.id}/editar` : `/organizador/eventos/editar/${req.params.id}`);
   }
 

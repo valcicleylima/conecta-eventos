@@ -22,7 +22,6 @@ if (metodoPagamento) {
   atualizarPainelPagamento();
 }
 
-const usarSetores = document.querySelector('#usarSetores');
 const setoresWrapper = document.querySelector('#setoresWrapper');
 const quantidadeSetores = document.querySelector('#quantidadeSetores');
 const gerarSetores = document.querySelector('#gerarSetores');
@@ -40,24 +39,9 @@ function criarLinhaSetor(index) {
 }
 
 function atualizarSetores() {
-  if (!usarSetores || !setoresWrapper || !setoresContainer) return;
-  setoresWrapper.classList.toggle('d-none', !usarSetores.checked);
-  document.querySelectorAll('.campo-geral-ingresso').forEach((campo) => {
-    campo.classList.toggle('d-none', usarSetores.checked);
-    campo.querySelectorAll('input').forEach((input) => {
-      input.disabled = usarSetores.checked;
-      input.required = !usarSetores.checked;
-    });
-  });
-  if (!usarSetores.checked) {
-    setoresContainer.innerHTML = '';
-  }
+  if (!setoresWrapper || !setoresContainer) return;
 }
-
-if (usarSetores) {
-  usarSetores.addEventListener('change', atualizarSetores);
-  atualizarSetores();
-}
+atualizarSetores();
 
 if (gerarSetores) {
   gerarSetores.addEventListener('click', () => {
@@ -76,11 +60,11 @@ function somaCapacidadeSetores() {
     .reduce((total, input) => total + Number(input.value || 0), 0);
 }
 
-if (formEvento && document.querySelector('#usarSetores')) {
+if (formEvento && setoresContainer) {
   formEvento.addEventListener('submit', (event) => {
     const totalSetores = somaCapacidadeSetores();
 
-    if (usarSetores.checked && totalSetores <= 0) {
+    if (totalSetores <= 0) {
       event.preventDefault();
       alert('Informe a capacidade dos setores.');
     }
