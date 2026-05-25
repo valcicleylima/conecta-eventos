@@ -12,6 +12,8 @@
     </div>
     <p><strong>Participante:</strong> <%= inscricao.nome %> - <%= inscricao.email %></p>
     <p><strong>Evento:</strong> <%= inscricao.titulo %></p>
+    <p><strong>Setor:</strong> <%= inscricao.setor_nome || 'Geral' %></p>
+    <p><strong>Quantidade:</strong> <%= inscricao.quantidade || 1 %></p>
     <p><strong>Data:</strong> <%= new Date(inscricao.data_evento).toLocaleDateString('pt-BR') %> às <%= inscricao.horario %></p>
     <p><strong>Local:</strong> <%= inscricao.local %>, <%= inscricao.cidade %></p>
     <p><strong>Pagamento:</strong> <%= inscricao.status_pagamento %> via <%= inscricao.metodo_pagamento %></p>

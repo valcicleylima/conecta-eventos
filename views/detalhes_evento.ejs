@@ -14,13 +14,33 @@
       <ul class="list-group mb-3">
         <li class="list-group-item"><strong>Data:</strong> <%= new Date(evento.data_evento).toLocaleDateString('pt-BR') %> às <%= evento.horario %></li>
         <li class="list-group-item"><strong>Local:</strong> <%= evento.local %>, <%= evento.cidade %></li>
-        <li class="list-group-item"><strong>Vagas:</strong> <%= evento.vagas_ocupadas %>/<%= evento.capacidade_maxima %></li>
-        <li class="list-group-item"><strong>Ingresso:</strong> R$ <%= Number(evento.preco_ingresso).toFixed(2).replace('.', ',') %></li>
+        <% if (setores.length) { %>
+          <li class="list-group-item"><strong>Setores:</strong> <%= setores.length %></li>
+        <% } else { %>
+          <li class="list-group-item"><strong>Vagas disponíveis:</strong> <%= disponibilidadeGeral.disponiveis %>/<%= evento.capacidade_maxima %></li>
+          <li class="list-group-item"><strong>Ingresso:</strong> R$ <%= Number(evento.preco_ingresso).toFixed(2).replace('.', ',') %></li>
+        <% } %>
         <li class="list-group-item"><strong>Status:</strong> <%- include('partials/status_evento_badge', { status: evento.status_evento }) %></li>
       </ul>
       <% if (usuario) { %>
         <% if (evento.status_evento === 'aprovado' && usuario.tipo_usuario === 'cliente') { %>
-          <form action="/inscricoes/evento/<%= evento.id %>" method="POST" class="d-inline">
+          <form action="/inscricoes/evento/<%= evento.id %>" method="POST" class="mb-3">
+            <% if (setores.length) { %>
+              <div class="mb-2">
+                <label class="form-label">Setor</label>
+                <select name="setor_id" class="form-select" required>
+                  <% setores.forEach(setor => { %>
+                    <option value="<%= setor.id %>" <%= setor.disponiveis <= 0 ? 'disabled' : '' %>>
+                      <%= setor.nome %> - R$ <%= Number(setor.preco).toFixed(2).replace('.', ',') %> - <%= setor.disponiveis %> disponíveis
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            <% } %>
+            <div class="mb-2">
+              <label class="form-label">Quantidade de ingressos</label>
+              <input type="number" name="quantidade" class="form-control" min="1" value="1" required>
+            </div>
             <button class="btn btn-success">Inscrever-se</button>
           </form>
         <% } %>

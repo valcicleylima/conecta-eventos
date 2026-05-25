@@ -17,7 +17,11 @@
       <tbody>
         <% inscricoes.forEach(i => { %>
           <tr>
-            <td><strong><%= i.titulo %></strong><br><small class="text-muted"><%= i.local %>, <%= i.cidade %></small></td>
+            <td>
+              <strong><%= i.titulo %></strong><br>
+              <small class="text-muted"><%= i.local %>, <%= i.cidade %></small><br>
+              <small>Setor: <%= i.setor_nome || 'Geral' %> | Ingressos: <%= i.quantidade || 1 %></small>
+            </td>
             <td><%= new Date(i.data_evento).toLocaleDateString('pt-BR') %> às <%= i.horario %></td>
             <td><span class="badge text-bg-info"><%= i.status_pagamento || 'pendente' %></span></td>
             <td><span class="badge text-bg-secondary"><%= i.status_inscricao %></span></td>

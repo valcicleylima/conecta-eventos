@@ -31,6 +31,24 @@ exports.criar = async (evento) => {
   return result.insertId;
 };
 
+exports.disponibilidadeGeral = async (eventoId) => {
+  const [rows] = await db.execute(
+    `SELECT e.capacidade_maxima,
+      COALESCE(SUM(CASE WHEN i.status_inscricao = 'confirmada' THEN i.quantidade ELSE 0 END), 0) AS vendidos
+     FROM eventos e
+     LEFT JOIN inscricoes i ON i.evento_id = e.id AND i.setor_id IS NULL
+     WHERE e.id = ?
+     GROUP BY e.id`,
+    [eventoId]
+  );
+  if (!rows[0]) return { capacidade_maxima: 0, vendidos: 0, disponiveis: 0 };
+  return {
+    capacidade_maxima: rows[0].capacidade_maxima,
+    vendidos: Number(rows[0].vendidos || 0),
+    disponiveis: Number(rows[0].capacidade_maxima) - Number(rows[0].vendidos || 0)
+  };
+};
+
 function termoBusca(q) {
   return `%${String(q || '').trim()}%`;
 }
@@ -138,7 +156,7 @@ exports.dashboardOrganizador = async (criadorId, { q = '', status = '' } = {}) =
   }
   const [rows] = await db.execute(
     `SELECT e.id, e.titulo, e.status_evento,
-      COUNT(DISTINCT i.id) AS total_inscritos,
+      COALESCE(SUM(CASE WHEN i.status_inscricao <> 'cancelada' THEN i.quantidade ELSE 0 END), 0) AS total_inscritos,
       COALESCE(SUM(CASE WHEN p.status_pagamento = 'aprovado' THEN p.valor ELSE 0 END), 0) AS total_arrecadado
      FROM eventos e
      LEFT JOIN inscricoes i ON i.evento_id = e.id AND i.status_inscricao <> 'cancelada'

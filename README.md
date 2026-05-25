@@ -2,6 +2,12 @@
 
 Sistema academico completo feito com Node.js, Express, EJS, MySQL e Bootstrap.
 
+Documentacao completa:
+
+```text
+docs/DOCUMENTACAO.md
+```
+
 ## Funcionalidades
 
 - Cadastro, login, logout e sessao com `express-session`
@@ -20,6 +26,8 @@ Sistema academico completo feito com Node.js, Express, EJS, MySQL e Bootstrap.
 - Pesquisa administrativa de usuarios por nome, e-mail, perfil, CPF/CNPJ, telefone ou organizacao
 - Pesquisa administrativa de solicitacoes de organizador por CPF/CNPJ, telefone, e-mail ou organizacao
 - Upload de imagem do evento a partir do computador ou celular
+- Eventos com setores diferentes, cada setor com capacidade e valor proprio
+- Cliente escolhe setor e quantidade de ingressos na compra
 - Pagamento simulado por Pix, cartao ou boleto
 - Recuperacao de senha por codigo enviado ao e-mail cadastrado
 - Comprovante de inscricao

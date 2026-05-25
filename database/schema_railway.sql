@@ -33,14 +33,28 @@ CREATE TABLE eventos (
   CONSTRAINT fk_evento_criador FOREIGN KEY (criador_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+CREATE TABLE setores_evento (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  evento_id INT NOT NULL,
+  nome VARCHAR(100) NOT NULL,
+  capacidade INT NOT NULL,
+  preco DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_setor_evento FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE
+);
+
 CREATE TABLE inscricoes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id INT NOT NULL,
   evento_id INT NOT NULL,
+  setor_id INT NULL,
+  quantidade INT NOT NULL DEFAULT 1,
+  valor_total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   status_inscricao ENUM('pendente', 'confirmada', 'cancelada') NOT NULL DEFAULT 'pendente',
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_inscricao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  CONSTRAINT fk_inscricao_evento FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE
+  CONSTRAINT fk_inscricao_evento FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE,
+  CONSTRAINT fk_inscricao_setor FOREIGN KEY (setor_id) REFERENCES setores_evento(id) ON DELETE SET NULL
 );
 
 CREATE TABLE pagamentos (

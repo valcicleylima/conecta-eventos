@@ -14,6 +14,8 @@
       <thead class="table-light">
         <tr>
           <th>Participante</th>
+          <th>Setor</th>
+          <th>Qtd.</th>
           <th>Status inscrição</th>
           <th>Status pagamento</th>
           <th>Valor</th>
@@ -23,13 +25,15 @@
         <% inscricoes.forEach(i => { %>
           <tr>
             <td><strong><%= i.nome %></strong><br><small class="text-muted"><%= i.email %></small></td>
+            <td><%= i.setor_nome || 'Geral' %></td>
+            <td><%= i.quantidade || 1 %></td>
             <td><%= i.status_inscricao %></td>
             <td><%= i.status_pagamento || 'pendente' %></td>
             <td>R$ <%= Number(i.valor || 0).toFixed(2).replace('.', ',') %></td>
           </tr>
         <% }) %>
         <% if (inscricoes.length === 0) { %>
-          <tr><td colspan="4" class="text-center p-4">Nenhuma inscrição neste evento.</td></tr>
+          <tr><td colspan="6" class="text-center p-4">Nenhuma inscrição neste evento.</td></tr>
         <% } %>
       </tbody>
     </table>

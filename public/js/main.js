@@ -21,3 +21,43 @@ if (metodoPagamento) {
   metodoPagamento.addEventListener('change', atualizarPainelPagamento);
   atualizarPainelPagamento();
 }
+
+const usarSetores = document.querySelector('#usarSetores');
+const setoresWrapper = document.querySelector('#setoresWrapper');
+const quantidadeSetores = document.querySelector('#quantidadeSetores');
+const gerarSetores = document.querySelector('#gerarSetores');
+const setoresContainer = document.querySelector('#setoresContainer');
+
+function criarLinhaSetor(index) {
+  const row = document.createElement('div');
+  row.className = 'row g-2 mb-2 setor-row';
+  row.innerHTML = `
+    <div class="col-md-4"><input name="setor_nome" class="form-control" placeholder="Nome do setor ${index}"></div>
+    <div class="col-md-4"><input type="number" name="setor_capacidade" class="form-control" min="1" placeholder="Capacidade"></div>
+    <div class="col-md-4"><input type="number" step="0.01" name="setor_preco" class="form-control" min="0" placeholder="Valor"></div>
+  `;
+  return row;
+}
+
+function atualizarSetores() {
+  if (!usarSetores || !setoresWrapper || !setoresContainer) return;
+  setoresWrapper.classList.toggle('d-none', !usarSetores.checked);
+  if (!usarSetores.checked) {
+    setoresContainer.innerHTML = '';
+  }
+}
+
+if (usarSetores) {
+  usarSetores.addEventListener('change', atualizarSetores);
+  atualizarSetores();
+}
+
+if (gerarSetores) {
+  gerarSetores.addEventListener('click', () => {
+    setoresContainer.innerHTML = '';
+    const total = Math.max(1, Number(quantidadeSetores.value || 1));
+    for (let i = 1; i <= total; i++) {
+      setoresContainer.appendChild(criarLinhaSetor(i));
+    }
+  });
+}

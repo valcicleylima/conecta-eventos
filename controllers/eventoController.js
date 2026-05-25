@@ -1,5 +1,6 @@
 const Evento = require('../models/Evento');
 const Categoria = require('../models/Categoria');
+const SetorEvento = require('../models/SetorEvento');
 
 exports.listar = async (req, res) => {
   const filtros = { q: req.query.q || '' };
@@ -18,7 +19,9 @@ exports.detalhes = async (req, res) => {
     req.session.erro = 'Este evento ainda não está disponível publicamente.';
     return res.redirect('/eventos');
   }
-  res.render('detalhes_evento', { titulo: evento.titulo, evento });
+  const setores = await SetorEvento.listarPorEvento(req.params.id);
+  const disponibilidadeGeral = await Evento.disponibilidadeGeral(req.params.id);
+  res.render('detalhes_evento', { titulo: evento.titulo, evento, setores, disponibilidadeGeral });
 };
 
 exports.telaNovo = async (req, res) => {
@@ -35,7 +38,7 @@ exports.criar = async (req, res) => {
 
   const status_evento = req.session.usuario.tipo_usuario === 'administrador' ? 'aprovado' : 'pendente';
 
-  await Evento.criar({
+  const eventoId = await Evento.criar({
     titulo,
     descricao,
     data_evento,
@@ -49,6 +52,7 @@ exports.criar = async (req, res) => {
     categoria_id,
     criador_id: req.session.usuario.id
   });
+  await SetorEvento.criarVarios(eventoId, normalizarSetores(req.body));
   req.session.sucesso = status_evento === 'aprovado'
     ? 'Evento criado e publicado com sucesso.'
     : 'Evento enviado para aprovação do administrador.';
@@ -66,7 +70,8 @@ exports.telaEditar = async (req, res) => {
     return res.redirect('/eventos');
   }
   const categorias = await Categoria.listar();
-  res.render('editar_evento', { titulo: 'Editar Evento', evento, categorias });
+  const setores = await SetorEvento.listarPorEvento(req.params.id);
+  res.render('editar_evento', { titulo: 'Editar Evento', evento, categorias, setores });
 };
 
 exports.atualizar = async (req, res) => {
@@ -83,6 +88,7 @@ exports.atualizar = async (req, res) => {
   };
 
   await Evento.atualizar(req.params.id, dadosEvento);
+  await SetorEvento.substituirDoEvento(req.params.id, normalizarSetores(req.body));
   req.session.sucesso = 'Evento atualizado com sucesso.';
   res.redirect(`/eventos/${req.params.id}`);
 };
@@ -113,4 +119,18 @@ exports.cancelar = async (req, res) => {
 
 function podeGerenciar(usuario, evento) {
   return usuario.tipo_usuario === 'administrador' || Number(evento.criador_id) === Number(usuario.id);
+}
+
+function normalizarSetores(body) {
+  const nomes = Array.isArray(body.setor_nome) ? body.setor_nome : body.setor_nome ? [body.setor_nome] : [];
+  const capacidades = Array.isArray(body.setor_capacidade) ? body.setor_capacidade : body.setor_capacidade ? [body.setor_capacidade] : [];
+  const precos = Array.isArray(body.setor_preco) ? body.setor_preco : body.setor_preco ? [body.setor_preco] : [];
+
+  return nomes
+    .map((nome, index) => ({
+      nome,
+      capacidade: Number(capacidades[index] || 0),
+      preco: Number(precos[index] || 0)
+    }))
+    .filter((setor) => setor.nome && setor.capacidade > 0);
 }

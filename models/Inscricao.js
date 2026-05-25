@@ -1,9 +1,9 @@
 const db = require('../config/db');
 
-exports.criar = async ({ usuario_id, evento_id, status_inscricao }) => {
+exports.criar = async ({ usuario_id, evento_id, setor_id, quantidade, valor_total, status_inscricao }) => {
   const [result] = await db.execute(
-    'INSERT INTO inscricoes (usuario_id, evento_id, status_inscricao) VALUES (?, ?, ?)',
-    [usuario_id, evento_id, status_inscricao]
+    'INSERT INTO inscricoes (usuario_id, evento_id, setor_id, quantidade, valor_total, status_inscricao) VALUES (?, ?, ?, ?, ?, ?)',
+    [usuario_id, evento_id, setor_id || null, quantidade || 1, valor_total || 0, status_inscricao]
   );
   return result.insertId;
 };
@@ -26,9 +26,10 @@ exports.contarConfirmadasPorEvento = async (eventoId) => {
 
 exports.listarPorUsuario = async (usuarioId) => {
   const [rows] = await db.execute(
-    `SELECT i.*, e.titulo, e.data_evento, e.horario, e.local, e.cidade, p.status_pagamento, p.metodo_pagamento, p.valor
+    `SELECT i.*, e.titulo, e.data_evento, e.horario, e.local, e.cidade, s.nome AS setor_nome, p.status_pagamento, p.metodo_pagamento, p.valor
      FROM inscricoes i
      JOIN eventos e ON e.id = i.evento_id
+     LEFT JOIN setores_evento s ON s.id = i.setor_id
      LEFT JOIN pagamentos p ON p.inscricao_id = i.id
      WHERE i.usuario_id = ?
      ORDER BY i.criado_em DESC`,
@@ -65,11 +66,12 @@ exports.cancelar = async (inscricaoId, usuarioId) => {
 
 exports.buscarComprovante = async (inscricaoId, usuarioId) => {
   const [rows] = await db.execute(
-    `SELECT i.*, u.nome, u.email, e.titulo, e.data_evento, e.horario, e.local, e.cidade,
+    `SELECT i.*, u.nome, u.email, e.titulo, e.data_evento, e.horario, e.local, e.cidade, s.nome AS setor_nome,
       p.metodo_pagamento, p.status_pagamento, p.valor
      FROM inscricoes i
      JOIN usuarios u ON u.id = i.usuario_id
      JOIN eventos e ON e.id = i.evento_id
+     LEFT JOIN setores_evento s ON s.id = i.setor_id
      LEFT JOIN pagamentos p ON p.inscricao_id = i.id
      WHERE i.id = ? AND i.usuario_id = ?`,
     [inscricaoId, usuarioId]
@@ -84,9 +86,10 @@ exports.contar = async () => {
 
 exports.listarPorEvento = async (eventoId) => {
   const [rows] = await db.execute(
-    `SELECT i.*, u.nome, u.email, p.status_pagamento, p.valor
+    `SELECT i.*, u.nome, u.email, s.nome AS setor_nome, p.status_pagamento, p.valor
      FROM inscricoes i
      JOIN usuarios u ON u.id = i.usuario_id
+     LEFT JOIN setores_evento s ON s.id = i.setor_id
      LEFT JOIN pagamentos p ON p.inscricao_id = i.id
      WHERE i.evento_id = ?
      ORDER BY i.criado_em DESC`,
