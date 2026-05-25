@@ -102,6 +102,7 @@ npm install
 
 ```env
 DB_HOST=localhost
+DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=123456
 DB_NAME=gestao_eventos
@@ -119,6 +120,12 @@ SMTP_FROM=Conecta Eventos <seu-email@gmail.com>
 
 ```bash
 mysql -u root -p < database/schema.sql
+```
+
+No Railway, use o arquivo sem `CREATE DATABASE`:
+
+```text
+database/schema_railway.sql
 ```
 
 4. Para atualizar um banco antigo deste projeto, rode:
