@@ -145,11 +145,13 @@ function podeGerenciar(usuario, evento) {
 
 function normalizarSetores(body) {
   const nomes = Array.isArray(body.setor_nome) ? body.setor_nome : body.setor_nome ? [body.setor_nome] : [];
+  const ids = Array.isArray(body.setor_id) ? body.setor_id : body.setor_id ? [body.setor_id] : [];
   const capacidades = Array.isArray(body.setor_capacidade) ? body.setor_capacidade : body.setor_capacidade ? [body.setor_capacidade] : [];
   const precos = Array.isArray(body.setor_preco) ? body.setor_preco : body.setor_preco ? [body.setor_preco] : [];
 
   return nomes
     .map((nome, index) => ({
+      id: ids[index] || null,
       nome,
       capacidade: Number(capacidades[index] || 0),
       preco: Number(precos[index] || 0)

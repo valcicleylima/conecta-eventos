@@ -11,8 +11,38 @@ exports.criarVarios = async (eventoId, setores = []) => {
 };
 
 exports.substituirDoEvento = async (eventoId, setores = []) => {
-  await db.execute('DELETE FROM setores_evento WHERE evento_id = ?', [eventoId]);
-  await exports.criarVarios(eventoId, setores);
+  const idsMantidos = [];
+
+  for (const setor of setores) {
+    if (!setor.nome || !setor.capacidade || setor.preco === undefined) continue;
+
+    if (setor.id) {
+      await db.execute(
+        'UPDATE setores_evento SET nome = ?, capacidade = ?, preco = ? WHERE id = ? AND evento_id = ?',
+        [setor.nome, setor.capacidade, setor.preco, setor.id, eventoId]
+      );
+      idsMantidos.push(Number(setor.id));
+    } else {
+      const [result] = await db.execute(
+        'INSERT INTO setores_evento (evento_id, nome, capacidade, preco) VALUES (?, ?, ?, ?)',
+        [eventoId, setor.nome, setor.capacidade, setor.preco]
+      );
+      idsMantidos.push(result.insertId);
+    }
+  }
+
+  // Remove apenas setores sem inscrições. Setores já vendidos permanecem para manter histórico correto.
+  if (idsMantidos.length) {
+    const placeholders = idsMantidos.map(() => '?').join(',');
+    await db.execute(
+      `DELETE s FROM setores_evento s
+       LEFT JOIN inscricoes i ON i.setor_id = s.id
+       WHERE s.evento_id = ?
+         AND s.id NOT IN (${placeholders})
+         AND i.id IS NULL`,
+      [eventoId, ...idsMantidos]
+    );
+  }
 };
 
 exports.listarPorEvento = async (eventoId) => {

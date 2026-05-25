@@ -40,6 +40,7 @@
           <div id="setoresContainer">
             <% if (setores) { setores.forEach((setor, index) => { %>
               <div class="row g-2 mb-2 setor-row">
+                <input type="hidden" name="setor_id" value="<%= setor.id %>">
                 <div class="col-md-4"><input name="setor_nome" class="form-control" value="<%= setor.nome %>" placeholder="Nome do setor <%= index + 1 %>"></div>
                 <div class="col-md-4"><input type="number" name="setor_capacidade" class="form-control" value="<%= setor.capacidade %>" min="1" placeholder="Capacidade"></div>
                 <div class="col-md-4"><input type="number" step="0.01" name="setor_preco" class="form-control" value="<%= setor.preco %>" min="0" placeholder="Valor"></div>
