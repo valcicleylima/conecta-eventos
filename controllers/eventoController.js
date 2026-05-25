@@ -36,6 +36,13 @@ exports.criar = async (req, res) => {
     return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? '/eventos/novo' : '/organizador/eventos/novo');
   }
 
+  const setores = normalizarSetores(req.body);
+  const erroSetores = validarSetores(setores, capacidade_maxima);
+  if (erroSetores) {
+    req.session.erro = erroSetores;
+    return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? '/eventos/novo' : '/organizador/eventos/novo');
+  }
+
   const status_evento = req.session.usuario.tipo_usuario === 'administrador' ? 'aprovado' : 'pendente';
 
   const eventoId = await Evento.criar({
@@ -52,7 +59,7 @@ exports.criar = async (req, res) => {
     categoria_id,
     criador_id: req.session.usuario.id
   });
-  await SetorEvento.criarVarios(eventoId, normalizarSetores(req.body));
+  await SetorEvento.criarVarios(eventoId, setores);
   req.session.sucesso = status_evento === 'aprovado'
     ? 'Evento criado e publicado com sucesso.'
     : 'Evento enviado para aprovação do administrador.';
@@ -87,8 +94,15 @@ exports.atualizar = async (req, res) => {
     imagem: req.file ? `/img/eventos/${req.file.filename}` : evento.imagem
   };
 
+  const setores = normalizarSetores(req.body);
+  const erroSetores = validarSetores(setores, req.body.capacidade_maxima);
+  if (erroSetores) {
+    req.session.erro = erroSetores;
+    return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? `/eventos/${req.params.id}/editar` : `/organizador/eventos/editar/${req.params.id}`);
+  }
+
   await Evento.atualizar(req.params.id, dadosEvento);
-  await SetorEvento.substituirDoEvento(req.params.id, normalizarSetores(req.body));
+  await SetorEvento.substituirDoEvento(req.params.id, setores);
   req.session.sucesso = 'Evento atualizado com sucesso.';
   res.redirect(`/eventos/${req.params.id}`);
 };
@@ -133,4 +147,17 @@ function normalizarSetores(body) {
       preco: Number(precos[index] || 0)
     }))
     .filter((setor) => setor.nome && setor.capacidade > 0);
+}
+
+function validarSetores(setores, capacidadeMaxima) {
+  if (!setores.length) return null;
+
+  const capacidadeEvento = Number(capacidadeMaxima || 0);
+  const somaSetores = setores.reduce((total, setor) => total + Number(setor.capacidade || 0), 0);
+
+  if (somaSetores > capacidadeEvento) {
+    return `A soma das capacidades dos setores (${somaSetores}) não pode ser maior que a capacidade total do evento (${capacidadeEvento}).`;
+  }
+
+  return null;
 }

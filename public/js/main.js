@@ -61,3 +61,22 @@ if (gerarSetores) {
     }
   });
 }
+
+const formEvento = document.querySelector('form.form-card');
+
+function somaCapacidadeSetores() {
+  return Array.from(document.querySelectorAll('input[name="setor_capacidade"]'))
+    .reduce((total, input) => total + Number(input.value || 0), 0);
+}
+
+if (formEvento && document.querySelector('#usarSetores')) {
+  formEvento.addEventListener('submit', (event) => {
+    const capacidadeEvento = Number(formEvento.querySelector('input[name="capacidade_maxima"]')?.value || 0);
+    const totalSetores = somaCapacidadeSetores();
+
+    if (usarSetores.checked && totalSetores > capacidadeEvento) {
+      event.preventDefault();
+      alert(`A soma das capacidades dos setores (${totalSetores}) não pode ser maior que a capacidade total do evento (${capacidadeEvento}).`);
+    }
+  });
+}
