@@ -42,6 +42,13 @@ function criarLinhaSetor(index) {
 function atualizarSetores() {
   if (!usarSetores || !setoresWrapper || !setoresContainer) return;
   setoresWrapper.classList.toggle('d-none', !usarSetores.checked);
+  document.querySelectorAll('.campo-geral-ingresso').forEach((campo) => {
+    campo.classList.toggle('d-none', usarSetores.checked);
+    campo.querySelectorAll('input').forEach((input) => {
+      input.disabled = usarSetores.checked;
+      input.required = !usarSetores.checked;
+    });
+  });
   if (!usarSetores.checked) {
     setoresContainer.innerHTML = '';
   }
@@ -71,12 +78,11 @@ function somaCapacidadeSetores() {
 
 if (formEvento && document.querySelector('#usarSetores')) {
   formEvento.addEventListener('submit', (event) => {
-    const capacidadeEvento = Number(formEvento.querySelector('input[name="capacidade_maxima"]')?.value || 0);
     const totalSetores = somaCapacidadeSetores();
 
-    if (usarSetores.checked && totalSetores > capacidadeEvento) {
+    if (usarSetores.checked && totalSetores <= 0) {
       event.preventDefault();
-      alert(`A soma das capacidades dos setores (${totalSetores}) não pode ser maior que a capacidade total do evento (${capacidadeEvento}).`);
+      alert('Informe a capacidade dos setores.');
     }
   });
 }

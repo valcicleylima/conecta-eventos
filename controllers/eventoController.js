@@ -30,13 +30,16 @@ exports.telaNovo = async (req, res) => {
 };
 
 exports.criar = async (req, res) => {
-  const { titulo, descricao, data_evento, horario, local, cidade, capacidade_maxima, preco_ingresso, categoria_id } = req.body;
-  if (!titulo || !descricao || !data_evento || !horario || !local || !cidade || !capacidade_maxima || !preco_ingresso || !categoria_id) {
+  const { titulo, descricao, data_evento, horario, local, cidade, categoria_id } = req.body;
+  const setores = normalizarSetores(req.body);
+  const capacidade_maxima = setores.length ? somaCapacidadeSetores(setores) : req.body.capacidade_maxima;
+  const preco_ingresso = setores.length ? menorPrecoSetores(setores) : req.body.preco_ingresso;
+
+  if (!titulo || !descricao || !data_evento || !horario || !local || !cidade || !capacidade_maxima || preco_ingresso === undefined || preco_ingresso === '' || !categoria_id) {
     req.session.erro = 'Preencha todos os campos obrigatórios do evento.';
     return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? '/eventos/novo' : '/organizador/eventos/novo');
   }
 
-  const setores = normalizarSetores(req.body);
   const erroSetores = validarSetores(setores, capacidade_maxima);
   if (erroSetores) {
     req.session.erro = erroSetores;
@@ -90,12 +93,14 @@ exports.atualizar = async (req, res) => {
 
   const dadosEvento = {
     ...req.body,
+    capacidade_maxima: normalizarSetores(req.body).length ? somaCapacidadeSetores(normalizarSetores(req.body)) : req.body.capacidade_maxima,
+    preco_ingresso: normalizarSetores(req.body).length ? menorPrecoSetores(normalizarSetores(req.body)) : req.body.preco_ingresso,
     status_evento: req.session.usuario.tipo_usuario === 'administrador' ? req.body.status_evento : evento.status_evento,
     imagem: req.file ? `/img/eventos/${req.file.filename}` : evento.imagem
   };
 
   const setores = normalizarSetores(req.body);
-  const erroSetores = validarSetores(setores, req.body.capacidade_maxima);
+  const erroSetores = validarSetores(setores, dadosEvento.capacidade_maxima);
   if (erroSetores) {
     req.session.erro = erroSetores;
     return res.redirect(req.session.usuario.tipo_usuario === 'administrador' ? `/eventos/${req.params.id}/editar` : `/organizador/eventos/editar/${req.params.id}`);
@@ -160,4 +165,12 @@ function validarSetores(setores, capacidadeMaxima) {
   }
 
   return null;
+}
+
+function somaCapacidadeSetores(setores) {
+  return setores.reduce((total, setor) => total + Number(setor.capacidade || 0), 0);
+}
+
+function menorPrecoSetores(setores) {
+  return Math.min(...setores.map((setor) => Number(setor.preco || 0)));
 }
