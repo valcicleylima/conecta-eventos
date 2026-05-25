@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Minhas inscrições</h1>
+  <div class="table-responsive bg-white shadow-sm rounded">
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Evento</th>
+          <th>Data</th>
+          <th>Pagamento</th>
+          <th>Inscrição</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% inscricoes.forEach(i => { %>
+          <tr>
+            <td><strong><%= i.titulo %></strong><br><small class="text-muted"><%= i.local %>, <%= i.cidade %></small></td>
+            <td><%= new Date(i.data_evento).toLocaleDateString('pt-BR') %> às <%= i.horario %></td>
+            <td><span class="badge text-bg-info"><%= i.status_pagamento || 'pendente' %></span></td>
+            <td><span class="badge text-bg-secondary"><%= i.status_inscricao %></span></td>
+            <td class="text-end">
+              <% if (i.status_pagamento !== 'aprovado' && i.status_inscricao !== 'cancelada') { %>
+                <a href="/pagamentos/<%= i.id %>" class="btn btn-sm btn-success">Pagar</a>
+              <% } %>
+              <% if (i.status_inscricao === 'confirmada') { %>
+                <a href="/inscricoes/<%= i.id %>/comprovante" class="btn btn-sm btn-outline-primary">Comprovante</a>
+              <% } %>
+              <% if (i.status_inscricao !== 'cancelada') { %>
+                <form action="/inscricoes/<%= i.id %>/cancelar?_method=PUT" method="POST" class="d-inline" data-confirm="Cancelar esta inscrição?">
+                  <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (inscricoes.length === 0) { %>
+          <tr><td colspan="5" class="text-center p-4">Você ainda não possui inscrições.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('partials/footer') %>

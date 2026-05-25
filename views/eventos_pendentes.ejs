@@ -1,0 +1,50 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Eventos pendentes</h1>
+  <form action="/admin/eventos-pendentes" method="GET" class="row g-2 mb-4">
+    <div class="col-md-10">
+      <input name="q" class="form-control" value="<%= filtros.q || '' %>" placeholder="Pesquisar por evento, cidade, local, categoria ou organizador">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary">Pesquisar</button>
+    </div>
+  </form>
+  <div class="table-responsive bg-white shadow-sm rounded">
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Evento</th>
+          <th>Organizador</th>
+          <th>Data</th>
+          <th>Local</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% eventos.forEach(evento => { %>
+          <tr>
+            <td><strong><%= evento.titulo %></strong><br><small class="text-muted"><%= evento.categoria_nome %></small></td>
+            <td><%= evento.organizador_nome %></td>
+            <td><%= new Date(evento.data_evento).toLocaleDateString('pt-BR') %> às <%= evento.horario %></td>
+            <td><%= evento.cidade %></td>
+            <td class="text-end">
+              <a href="/eventos/<%= evento.id %>" class="btn btn-sm btn-outline-secondary">Ver</a>
+              <form action="/admin/aprovar-evento/<%= evento.id %>" method="POST" class="d-inline">
+                <button class="btn btn-sm btn-success">Aprovar</button>
+              </form>
+              <form action="/admin/rejeitar-evento/<%= evento.id %>" method="POST" class="d-inline" data-confirm="Rejeitar este evento?">
+                <button class="btn btn-sm btn-outline-danger">Rejeitar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (eventos.length === 0) { %>
+          <tr><td colspan="5" class="text-center p-4">Nenhum evento pendente.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('partials/footer') %>

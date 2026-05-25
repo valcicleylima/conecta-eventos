@@ -1,0 +1,25 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Solicitar perfil de organizador</h1>
+  <% if (solicitacaoPendente) { %>
+    <div class="alert alert-info">Você já possui uma solicitação pendente de análise.</div>
+  <% } else { %>
+    <form action="/solicitar-organizador" method="POST" class="card border-0 shadow-sm form-card">
+      <div class="card-body row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nome cadastrado</label>
+          <input class="form-control" value="<%= usuario.nome %>" disabled>
+        </div>
+        <div class="col-md-3"><label class="form-label">Telefone</label><input name="telefone" class="form-control" required></div>
+        <div class="col-md-3"><label class="form-label">CPF ou CNPJ</label><input name="cpf_cnpj" class="form-control" required></div>
+        <div class="col-md-6"><label class="form-label">Nome da organização</label><input name="nome_organizacao" class="form-control" required></div>
+        <div class="col-md-6"><label class="form-label">Redes sociais ou site</label><input name="site_redes" class="form-control"></div>
+        <div class="col-12"><label class="form-label">Descrição da organização</label><textarea name="descricao_organizacao" class="form-control" rows="4" required></textarea></div>
+        <div class="col-12"><button class="btn btn-primary">Enviar solicitação</button></div>
+      </div>
+    </form>
+  <% } %>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,22 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Dashboard administrativo</h1>
+    <div class="d-flex gap-2">
+      <a href="/admin/eventos" class="btn btn-outline-primary">Todos eventos</a>
+      <a href="/admin/eventos-pendentes" class="btn btn-outline-primary">Eventos pendentes</a>
+      <a href="/admin/solicitacoes-organizador" class="btn btn-outline-primary">Solicitações</a>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Usuários</span><strong><%= resumo.totalUsuarios %></strong></div></div></div>
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Organizadores</span><strong><%= resumo.totalOrganizadores %></strong></div></div></div>
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Eventos pendentes</span><strong><%= resumo.eventosPendentes %></strong></div></div></div>
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Solicitações pendentes</span><strong><%= resumo.solicitacoesPendentes %></strong></div></div></div>
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Eventos aprovados</span><strong><%= resumo.eventosAprovados %></strong></div></div></div>
+    <div class="col-md-4"><div class="card metric-card"><div class="card-body"><span>Pagamentos</span><strong><%= resumo.totalPagamentos %></strong></div></div></div>
+  </div>
+</main>
+<%- include('partials/footer') %>

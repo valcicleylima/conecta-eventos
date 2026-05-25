@@ -1,0 +1,87 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h1 class="h3">Pagamento</h1>
+          <p class="text-muted mb-4"><%= inscricao.titulo %></p>
+          <div class="alert alert-info">Simulacao academica: ao confirmar, o pagamento sera aprovado automaticamente.</div>
+          <form action="/pagamentos/<%= inscricao.id %>" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Valor</label>
+              <input class="form-control" value="R$ <%= Number(inscricao.valor || inscricao.preco_ingresso).toFixed(2).replace('.', ',') %>" disabled>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Forma de pagamento</label>
+              <select name="metodo_pagamento" id="metodoPagamento" class="form-select" required>
+                <option value="pix">Pix</option>
+                <option value="cartao">Cartao de credito ou debito</option>
+                <option value="boleto">Boleto</option>
+              </select>
+            </div>
+
+            <div class="payment-panel border rounded p-3 mb-3" data-payment-panel="pix">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-auto">
+                  <img src="<%= dadosPagamento.qrCodeUrl %>" alt="QR Code Pix" class="img-thumbnail bg-white" width="180" height="180">
+                </div>
+                <div class="col">
+                  <h2 class="h5">Pix</h2>
+                  <p class="text-muted small mb-2">Use o QR Code ou copie a chave aleatoria abaixo.</p>
+                  <label class="form-label">Chave Pix aleatoria</label>
+                  <input class="form-control" value="<%= dadosPagamento.chavePix %>" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="payment-panel border rounded p-3 mb-3 d-none" data-payment-panel="boleto">
+              <h2 class="h5">Boleto simulado</h2>
+              <p class="text-muted small">Linha digitavel e codigo de barras ficticios para apresentacao academica.</p>
+              <label class="form-label">Linha digitavel</label>
+              <input class="form-control mb-3" value="<%= dadosPagamento.boletoLinha %>" readonly>
+              <label class="form-label">Codigo de barras</label>
+              <div class="barcode-simulated mb-2"><%= dadosPagamento.boletoCodigo %></div>
+            </div>
+
+            <div class="payment-panel border rounded p-3 mb-3 d-none" data-payment-panel="cartao">
+              <h2 class="h5">Cartao de credito ou debito</h2>
+              <p class="text-muted small">Dados ficticios. Nenhuma cobranca real sera feita.</p>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nome impresso no cartao</label>
+                  <input class="form-control" name="nome_cartao" placeholder="Nome do titular">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Numero do cartao</label>
+                  <input class="form-control" name="numero_cartao" maxlength="19" placeholder="0000 0000 0000 0000">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Validade</label>
+                  <input class="form-control" name="validade_cartao" placeholder="MM/AA">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">CVV</label>
+                  <input class="form-control" name="cvv_cartao" maxlength="4" placeholder="123">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Tipo</label>
+                  <select name="tipo_cartao" class="form-select">
+                    <option value="credito">Credito</option>
+                    <option value="debito">Debito</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-success">Simular pagamento aprovado</button>
+            <a href="/inscricoes/minhas" class="btn btn-outline-secondary">Voltar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<%- include('partials/footer') %>

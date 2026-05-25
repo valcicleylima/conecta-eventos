@@ -1,0 +1,25 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Novo evento</h1>
+  <form action="<%= usuario && usuario.tipo_usuario === 'administrador' ? '/eventos' : '/organizador/eventos' %>" method="POST" enctype="multipart/form-data" class="card border-0 shadow-sm form-card">
+    <div class="card-body row g-3">
+      <div class="col-md-8"><label class="form-label">Título</label><input name="titulo" class="form-control" required></div>
+      <div class="col-md-4"><label class="form-label">Categoria</label><select name="categoria_id" class="form-select" required><% categorias.forEach(c => { %><option value="<%= c.id %>"><%= c.nome %></option><% }) %></select></div>
+      <div class="col-12"><label class="form-label">Descrição</label><textarea name="descricao" class="form-control" rows="4" required></textarea></div>
+      <div class="col-md-3"><label class="form-label">Data</label><input type="date" name="data_evento" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label">Horário</label><input type="time" name="horario" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label">Capacidade</label><input type="number" name="capacidade_maxima" min="1" class="form-control" required></div>
+      <div class="col-md-3"><label class="form-label">Preço</label><input type="number" step="0.01" name="preco_ingresso" min="0" class="form-control" required></div>
+      <div class="col-md-8"><label class="form-label">Local</label><input name="local" class="form-control" required></div>
+      <div class="col-md-4"><label class="form-label">Cidade</label><input name="cidade" class="form-control" required></div>
+      <div class="col-12">
+        <label class="form-label">Imagem do evento</label>
+        <input type="file" name="imagem" class="form-control" accept="image/*">
+      </div>
+      <div class="col-12"><button class="btn btn-primary">Salvar evento</button></div>
+    </div>
+  </form>
+</main>
+<%- include('partials/footer') %>

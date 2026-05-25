@@ -1,0 +1,22 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="receipt mx-auto bg-white shadow-sm">
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+      <div>
+        <h1 class="h3 mb-1">Comprovante de inscrição</h1>
+        <p class="text-muted mb-0">Inscrição nº <%= inscricao.id %></p>
+      </div>
+      <button class="btn btn-outline-primary d-print-none" onclick="window.print()">Imprimir</button>
+    </div>
+    <p><strong>Participante:</strong> <%= inscricao.nome %> - <%= inscricao.email %></p>
+    <p><strong>Evento:</strong> <%= inscricao.titulo %></p>
+    <p><strong>Data:</strong> <%= new Date(inscricao.data_evento).toLocaleDateString('pt-BR') %> às <%= inscricao.horario %></p>
+    <p><strong>Local:</strong> <%= inscricao.local %>, <%= inscricao.cidade %></p>
+    <p><strong>Pagamento:</strong> <%= inscricao.status_pagamento %> via <%= inscricao.metodo_pagamento %></p>
+    <p><strong>Valor:</strong> R$ <%= Number(inscricao.valor).toFixed(2).replace('.', ',') %></p>
+    <div class="alert alert-success mt-4 mb-0">Inscrição confirmada.</div>
+  </div>
+</main>
+<%- include('partials/footer') %>

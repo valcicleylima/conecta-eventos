@@ -1,0 +1,33 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Editar evento</h1>
+  <form action="<%= usuario && usuario.tipo_usuario === 'administrador' ? '/eventos/' + evento.id : '/organizador/eventos/' + evento.id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="card border-0 shadow-sm form-card">
+    <div class="card-body row g-3">
+      <div class="col-md-8"><label class="form-label">Título</label><input name="titulo" class="form-control" value="<%= evento.titulo %>" required></div>
+      <div class="col-md-4"><label class="form-label">Categoria</label><select name="categoria_id" class="form-select" required><% categorias.forEach(c => { %><option value="<%= c.id %>" <%= c.id === evento.categoria_id ? 'selected' : '' %>><%= c.nome %></option><% }) %></select></div>
+      <div class="col-12"><label class="form-label">Descrição</label><textarea name="descricao" class="form-control" rows="4" required><%= evento.descricao %></textarea></div>
+      <div class="col-md-3"><label class="form-label">Data</label><input type="date" name="data_evento" class="form-control" value="<%= new Date(evento.data_evento).toISOString().split('T')[0] %>" required></div>
+      <div class="col-md-3"><label class="form-label">Horário</label><input type="time" name="horario" class="form-control" value="<%= evento.horario %>" required></div>
+      <div class="col-md-3"><label class="form-label">Capacidade</label><input type="number" name="capacidade_maxima" min="1" class="form-control" value="<%= evento.capacidade_maxima %>" required></div>
+      <div class="col-md-3"><label class="form-label">Preço</label><input type="number" step="0.01" name="preco_ingresso" min="0" class="form-control" value="<%= evento.preco_ingresso %>" required></div>
+      <div class="col-md-6"><label class="form-label">Local</label><input name="local" class="form-control" value="<%= evento.local %>" required></div>
+      <div class="col-md-3"><label class="form-label">Cidade</label><input name="cidade" class="form-control" value="<%= evento.cidade %>" required></div>
+      <% if (usuario && usuario.tipo_usuario === 'administrador') { %>
+        <div class="col-md-3"><label class="form-label">Status</label><select name="status_evento" class="form-select"><% ['pendente','aprovado','rejeitado','cancelado'].forEach(s => { %><option value="<%= s %>" <%= s === evento.status_evento ? 'selected' : '' %>><%= s %></option><% }) %></select></div>
+      <% } else { %>
+        <div class="col-md-3"><label class="form-label">Status</label><input class="form-control" value="<%= evento.status_evento %>" disabled></div>
+      <% } %>
+      <div class="col-12">
+        <label class="form-label">Imagem do evento</label>
+        <% if (evento.imagem) { %>
+          <div class="mb-2"><img src="<%= evento.imagem %>" alt="Imagem atual" class="img-thumbnail" style="max-height: 140px;"></div>
+        <% } %>
+        <input type="file" name="imagem" class="form-control" accept="image/*">
+      </div>
+      <div class="col-12 d-flex gap-2"><button class="btn btn-primary">Atualizar evento</button><a href="/eventos/<%= evento.id %>" class="btn btn-outline-secondary">Cancelar</a></div>
+    </div>
+  </form>
+</main>
+<%- include('partials/footer') %>

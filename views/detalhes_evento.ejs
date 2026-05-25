@@ -1,0 +1,45 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <img src="<%= evento.imagem || '/img/evento-placeholder.svg' %>" class="detail-image shadow-sm" alt="Imagem do evento">
+    </div>
+    <div class="col-lg-5">
+      <span class="badge text-bg-secondary mb-2"><%= evento.categoria_nome %></span>
+      <h1 class="h2"><%= evento.titulo %></h1>
+      <p class="text-muted">Organizado por <%= evento.organizador_nome %></p>
+      <p><%= evento.descricao %></p>
+      <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>Data:</strong> <%= new Date(evento.data_evento).toLocaleDateString('pt-BR') %> às <%= evento.horario %></li>
+        <li class="list-group-item"><strong>Local:</strong> <%= evento.local %>, <%= evento.cidade %></li>
+        <li class="list-group-item"><strong>Vagas:</strong> <%= evento.vagas_ocupadas %>/<%= evento.capacidade_maxima %></li>
+        <li class="list-group-item"><strong>Ingresso:</strong> R$ <%= Number(evento.preco_ingresso).toFixed(2).replace('.', ',') %></li>
+        <li class="list-group-item"><strong>Status:</strong> <%- include('partials/status_evento_badge', { status: evento.status_evento }) %></li>
+      </ul>
+      <% if (usuario) { %>
+        <% if (evento.status_evento === 'aprovado' && usuario.tipo_usuario === 'cliente') { %>
+          <form action="/inscricoes/evento/<%= evento.id %>" method="POST" class="d-inline">
+            <button class="btn btn-success">Inscrever-se</button>
+          </form>
+        <% } %>
+        <% if (usuario.tipo_usuario === 'administrador' || Number(usuario.id) === Number(evento.criador_id)) { %>
+          <a href="<%= usuario.tipo_usuario === 'administrador' ? '/eventos/' + evento.id + '/editar' : '/organizador/eventos/editar/' + evento.id %>" class="btn btn-outline-primary">Editar</a>
+        <% } %>
+        <% if (usuario.tipo_usuario === 'administrador') { %>
+          <form action="/eventos/<%= evento.id %>?_method=DELETE" method="POST" class="d-inline" data-confirm="Excluir este evento?">
+            <button class="btn btn-outline-danger">Excluir</button>
+          </form>
+        <% } else if (Number(usuario.id) === Number(evento.criador_id)) { %>
+          <form action="/organizador/eventos/<%= evento.id %>/cancelar?_method=PUT" method="POST" class="d-inline" data-confirm="Cancelar este evento?">
+            <button class="btn btn-outline-danger">Cancelar evento</button>
+          </form>
+        <% } %>
+      <% } else { %>
+        <a href="/login" class="btn btn-primary">Faça login para se inscrever</a>
+      <% } %>
+    </div>
+  </div>
+</main>
+<%- include('partials/footer') %>

@@ -1,0 +1,16 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Painel administrativo</h1>
+    <a href="/admin/usuarios" class="btn btn-outline-primary">Gerenciar usuários</a>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-3"><div class="card metric-card"><div class="card-body"><span>Usuários</span><strong><%= resumo.totalUsuarios %></strong></div></div></div>
+    <div class="col-md-3"><div class="card metric-card"><div class="card-body"><span>Eventos</span><strong><%= resumo.totalEventos %></strong></div></div></div>
+    <div class="col-md-3"><div class="card metric-card"><div class="card-body"><span>Inscrições</span><strong><%= resumo.totalInscricoes %></strong></div></div></div>
+    <div class="col-md-3"><div class="card metric-card"><div class="card-body"><span>Pagamentos</span><strong><%= resumo.totalPagamentos %></strong></div></div></div>
+  </div>
+</main>
+<%- include('partials/footer') %>

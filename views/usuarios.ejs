@@ -1,0 +1,71 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <h1 class="h3 mb-4">Usuários</h1>
+  <form action="/admin/usuarios" method="GET" class="row g-2 mb-4">
+    <div class="col-md-5">
+      <input name="q" class="form-control" value="<%= filtros.q || '' %>" placeholder="Pesquisar por nome, e-mail, perfil, CPF/CNPJ, telefone ou organização">
+    </div>
+    <div class="col-md-3">
+      <select name="perfil" class="form-select">
+        <option value="">Todos os perfis</option>
+        <% ['administrador','organizador','cliente'].forEach(p => { %>
+          <option value="<%= p %>" <%= filtros.perfil === p ? 'selected' : '' %>><%= p %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select name="bloqueado" class="form-select">
+        <option value="">Todos</option>
+        <option value="0" <%= filtros.bloqueado === '0' ? 'selected' : '' %>>Ativos</option>
+        <option value="1" <%= filtros.bloqueado === '1' ? 'selected' : '' %>>Bloqueados</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary">Pesquisar</button>
+    </div>
+  </form>
+  <div class="table-responsive bg-white shadow-sm rounded">
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Perfil</th>
+          <th>Bloqueado</th>
+          <th>Criado em</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% usuarios.forEach(u => { %>
+          <tr>
+            <td><input form="editar-usuario-<%= u.id %>" name="nome" class="form-control form-control-sm" value="<%= u.nome %>" required></td>
+            <td><input form="editar-usuario-<%= u.id %>" type="email" name="email" class="form-control form-control-sm" value="<%= u.email %>" required></td>
+            <td>
+              <select form="editar-usuario-<%= u.id %>" name="tipo_usuario" class="form-select form-select-sm">
+                <% ['administrador','organizador','cliente'].forEach(tipo => { %>
+                  <option value="<%= tipo %>" <%= tipo === u.tipo_usuario ? 'selected' : '' %>><%= tipo %></option>
+                <% }) %>
+              </select>
+            </td>
+            <td class="text-center">
+              <input form="editar-usuario-<%= u.id %>" type="checkbox" name="bloqueado" value="1" class="form-check-input" <%= u.bloqueado ? 'checked' : '' %>>
+            </td>
+            <td><%= new Date(u.criado_em).toLocaleDateString('pt-BR') %></td>
+            <td class="text-end">
+              <form id="editar-usuario-<%= u.id %>" action="/admin/usuarios/<%= u.id %>?_method=PUT" method="POST" class="d-inline">
+                <button class="btn btn-sm btn-primary">Salvar</button>
+              </form>
+              <form action="/admin/usuarios/<%= u.id %>?_method=DELETE" method="POST" class="d-inline" data-confirm="Excluir este usuário?">
+                <button class="btn btn-sm btn-outline-danger">Excluir</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</main>
+<%- include('partials/footer') %>

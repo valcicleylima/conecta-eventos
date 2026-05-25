@@ -1,0 +1,43 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="container py-4">
+  <%- include('partials/messages') %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Eventos disponíveis</h1>
+    <% if (usuario && usuario.tipo_usuario === 'administrador') { %>
+      <a href="/eventos/novo" class="btn btn-primary">Novo evento</a>
+    <% } %>
+  </div>
+  <form action="/eventos" method="GET" class="row g-2 mb-4">
+    <div class="col-md-10">
+      <input name="q" class="form-control" value="<%= filtros.q || '' %>" placeholder="Pesquisar por título, cidade, local, categoria ou organizador">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary">Pesquisar</button>
+    </div>
+  </form>
+  <div class="row g-4">
+    <% eventos.forEach(evento => { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card event-card h-100 shadow-sm">
+          <img src="<%= evento.imagem || '/img/evento-placeholder.svg' %>" class="card-img-top" alt="Imagem do evento">
+          <div class="card-body d-flex flex-column">
+            <span class="badge text-bg-secondary align-self-start mb-2"><%= evento.categoria_nome %></span>
+            <h2 class="h5"><%= evento.titulo %></h2>
+            <p class="text-muted small mb-2"><%= new Date(evento.data_evento).toLocaleDateString('pt-BR') %> às <%= evento.horario %> - <%= evento.cidade %></p>
+            <p class="flex-grow-1"><%= evento.descricao.substring(0, 110) %>...</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>R$ <%= Number(evento.preco_ingresso).toFixed(2).replace('.', ',') %></strong>
+              <a href="/eventos/<%= evento.id %>" class="btn btn-outline-primary btn-sm">Detalhes</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+    <% if (eventos.length === 0) { %>
+      <div class="col-12"><div class="alert alert-info">Nenhum evento cadastrado.</div></div>
+    <% } %>
+  </div>
+
+</main>
+<%- include('partials/footer') %>

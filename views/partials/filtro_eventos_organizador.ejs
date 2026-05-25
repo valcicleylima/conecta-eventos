@@ -1,0 +1,16 @@
+<form action="<%= action %>" method="GET" class="row g-2 mb-4">
+  <div class="col-md-7">
+    <input name="q" class="form-control" value="<%= filtros.q || '' %>" placeholder="Pesquisar por evento, cidade, local ou status">
+  </div>
+  <div class="col-md-3">
+    <select name="status" class="form-select">
+      <option value="">Todos os status</option>
+      <% ['pendente','aprovado','rejeitado','cancelado'].forEach(s => { %>
+        <option value="<%= s %>" <%= filtros.status === s ? 'selected' : '' %>><%= s %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-primary">Pesquisar</button>
+  </div>
+</form>

@@ -1,0 +1,36 @@
+<div class="table-responsive bg-white shadow-sm rounded">
+  <table class="table align-middle mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Evento</th>
+        <th>Status</th>
+        <th>Inscritos</th>
+        <th>Total arrecadado</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% eventos.forEach(evento => { %>
+        <tr>
+          <td><strong><%= evento.titulo %></strong></td>
+          <td><%- include('partials/status_evento_badge', { status: evento.status_evento }) %></td>
+          <td><%= evento.total_inscritos %></td>
+          <td>R$ <%= Number(evento.total_arrecadado).toFixed(2).replace('.', ',') %></td>
+          <td class="text-end">
+            <a href="/eventos/<%= evento.id %>" class="btn btn-sm btn-outline-secondary">Ver</a>
+            <a href="/organizador/eventos/<%= evento.id %>/inscricoes" class="btn btn-sm btn-outline-success">Inscrições</a>
+            <a href="/organizador/eventos/editar/<%= evento.id %>" class="btn btn-sm btn-outline-primary">Editar</a>
+            <% if (evento.status_evento !== 'cancelado') { %>
+              <form action="/organizador/eventos/<%= evento.id %>/cancelar?_method=PUT" method="POST" class="d-inline" data-confirm="Cancelar este evento?">
+                <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (eventos.length === 0) { %>
+        <tr><td colspan="5" class="text-center p-4">Você ainda não criou eventos.</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

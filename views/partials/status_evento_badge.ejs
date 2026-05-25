@@ -1,0 +1,9 @@
+<%
+  const classesStatusEvento = {
+    aprovado: 'text-bg-success',
+    rejeitado: 'text-bg-danger',
+    pendente: 'text-bg-warning',
+    cancelado: 'text-bg-dark'
+  };
+%>
+<span class="badge <%= classesStatusEvento[status] || 'text-bg-secondary' %>"><%= status %></span>
