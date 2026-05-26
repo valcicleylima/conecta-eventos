@@ -37,8 +37,13 @@ exports.enviarCodigo = async (req, res) => {
       codigo
     });
   } catch (error) {
-    console.error(error);
-    req.session.erro = 'Nao foi possivel enviar o e-mail de recuperacao. Verifique as configuracoes SMTP e tente novamente.';
+    console.error('Erro ao enviar e-mail de recuperacao:', {
+      code: error.code,
+      command: error.command,
+      responseCode: error.responseCode,
+      message: error.message
+    });
+    req.session.erro = 'Nao foi possivel enviar o e-mail de recuperacao. Confira SMTP_USER, SMTP_PASS e se a senha de app esta correta.';
     return res.redirect('/esqueci-senha');
   }
 

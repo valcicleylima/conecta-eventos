@@ -6,18 +6,31 @@ function criarTransporter() {
     throw new Error('Configure SMTP_USER e SMTP_PASS no arquivo .env para enviar e-mails reais.');
   }
 
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: process.env.SMTP_SECURE === 'true',
+  const senhaApp = process.env.SMTP_PASS.replace(/\s/g, '');
+  const service = process.env.SMTP_SERVICE;
+  const configBase = {
     requireTLS: process.env.SMTP_SECURE !== 'true',
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      pass: senhaApp
     }
+  };
+
+  if (service) {
+    return nodemailer.createTransport({
+      ...configBase,
+      service
+    });
+  }
+
+  return nodemailer.createTransport({
+    ...configBase,
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: process.env.SMTP_SECURE === 'true'
   });
 }
 
@@ -48,7 +61,7 @@ exports.enviarCodigoRecuperacao = async ({ para, nome, codigo }) => {
         <h1 style="letter-spacing: 4px;">${codigo}</h1>
         <p>Ele expira em 15 minutos.</p>
       `
-    }), 12000);
+    }), 17000);
   } finally {
     transporter.close();
   }
