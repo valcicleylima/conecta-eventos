@@ -7,7 +7,6 @@ function criarTransporter() {
   }
 
   const senhaApp = process.env.SMTP_PASS.replace(/\s/g, '');
-  const service = process.env.SMTP_SERVICE;
   const configBase = {
     requireTLS: process.env.SMTP_SECURE !== 'true',
     connectionTimeout: 15000,
@@ -19,17 +18,10 @@ function criarTransporter() {
     }
   };
 
-  if (service) {
-    return nodemailer.createTransport({
-      ...configBase,
-      service
-    });
-  }
-
   return nodemailer.createTransport({
     ...configBase,
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: Number(process.env.SMTP_PORT || 587),
+    port: Number(process.env.SMTP_PORT || 465),
     secure: process.env.SMTP_SECURE === 'true'
   });
 }
